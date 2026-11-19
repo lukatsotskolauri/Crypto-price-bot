@@ -1,1 +1,3 @@
-console.log('Happy developing ✨')
+import { config } from "./config.js";
+
+console.log("config loaded");
