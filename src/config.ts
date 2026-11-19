@@ -13,4 +13,5 @@ function requireEnv(name: string): string {
 export const config = {
   telegramBotToken: requireEnv("TELEGRAM_BOT_TOKEN"),
   coingeckoApiKey: process.env["COINGECKO_API_KEY"],
+  ethRpcUrl: process.env["ETH_RPC_URL"] ?? "https://cloudflare-eth.com",
 };
