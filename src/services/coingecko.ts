@@ -49,10 +49,7 @@ export class CoinGeckoParseError extends Error {
   }
 }
 
-export type CoinGeckoError =
-  | CoinGeckoHttpError
-  | CoinGeckoRateLimitError
-  | CoinGeckoParseError;
+export type CoinGeckoError = CoinGeckoHttpError | CoinGeckoRateLimitError | CoinGeckoParseError;
 
 const SearchSchema = z.object({
   coins: z.array(
@@ -108,8 +105,7 @@ async function apiFetch<T>(url: string, schema: z.ZodType<T>): Promise<T> {
   const res = await fetch(url, { headers: getHeaders() });
 
   if (res.status === 429) throw new CoinGeckoRateLimitError();
-  if (!res.ok)
-    throw new CoinGeckoHttpError(res.status, `HTTP ${res.status} from CoinGecko`);
+  if (!res.ok) throw new CoinGeckoHttpError(res.status, `HTTP ${res.status} from CoinGecko`);
 
   const json: unknown = await res.json();
   const result = schema.safeParse(json);
@@ -129,10 +125,7 @@ export async function resolveCoin(query: string): Promise<string | null> {
     return mapped;
   }
 
-  const data = await apiFetch(
-    `${BASE_URL}/search?query=${encodeURIComponent(q)}`,
-    SearchSchema,
-  );
+  const data = await apiFetch(`${BASE_URL}/search?query=${encodeURIComponent(q)}`, SearchSchema);
 
   const matches = data.coins.filter(
     (c) => c.symbol.toLowerCase() === q || c.name.toLowerCase() === q,

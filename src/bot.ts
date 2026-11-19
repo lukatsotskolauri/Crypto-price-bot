@@ -8,11 +8,7 @@ import {
   CoinGeckoParseError,
 } from "./services/coingecko.js";
 import { buildCoinMessage, escapeHtml } from "./lib/format.js";
-import {
-  getBtcStats,
-  getEthStats,
-  type OnchainStats,
-} from "./services/onchain.js";
+import { getBtcStats, getEthStats, type OnchainStats } from "./services/onchain.js";
 
 export const bot = new Bot(config.telegramBotToken);
 
@@ -40,28 +36,19 @@ async function handleLookup(ctx: Context, query: string): Promise<void> {
       return;
     }
 
-    const [details, onchain] = await Promise.all([
-      getCoinDetails(id),
-      fetchOnchain(id),
-    ]);
+    const [details, onchain] = await Promise.all([getCoinDetails(id), fetchOnchain(id)]);
     await ctx.reply(buildCoinMessage(details, onchain), {
       parse_mode: "HTML",
       link_preview_options: { is_disabled: true },
     });
   } catch (err) {
     if (err instanceof CoinGeckoRateLimitError) {
-      await ctx.reply(
-        "CoinGecko is rate-limiting us right now. Please try again in a moment.",
-      );
+      await ctx.reply("CoinGecko is rate-limiting us right now. Please try again in a moment.");
     } else if (err instanceof CoinGeckoHttpError) {
-      await ctx.reply(
-        `Failed to fetch price data (HTTP ${err.status}). Please try again.`,
-      );
+      await ctx.reply(`Failed to fetch price data (HTTP ${err.status}). Please try again.`);
     } else if (err instanceof CoinGeckoParseError) {
       console.error("CoinGecko parse error:", err.zodError);
-      await ctx.reply(
-        "Received unexpected data from CoinGecko. Please try again later.",
-      );
+      await ctx.reply("Received unexpected data from CoinGecko. Please try again later.");
     } else {
       console.error("Unexpected error during lookup:", err);
       await ctx.reply("Something went wrong. Please try again.");

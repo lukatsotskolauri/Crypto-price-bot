@@ -13,8 +13,7 @@ export interface EthOnchainStats {
 }
 
 export type OnchainStats =
-  | { kind: "btc"; data: BtcOnchainStats }
-  | { kind: "eth"; data: EthOnchainStats };
+  { kind: "btc"; data: BtcOnchainStats } | { kind: "eth"; data: EthOnchainStats };
 
 const MemPoolFeesSchema = z.object({
   fastestFee: z.number(),
