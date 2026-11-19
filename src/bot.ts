@@ -8,8 +8,23 @@ import {
   CoinGeckoParseError,
 } from "./services/coingecko.js";
 import { buildCoinMessage, escapeHtml } from "./lib/format.js";
+import {
+  getBtcStats,
+  getEthStats,
+  type OnchainStats,
+} from "./services/onchain.js";
 
 export const bot = new Bot(config.telegramBotToken);
+
+async function fetchOnchain(coinId: string): Promise<OnchainStats | undefined> {
+  try {
+    if (coinId === "bitcoin") return { kind: "btc", data: await getBtcStats() };
+    if (coinId === "ethereum") return { kind: "eth", data: await getEthStats() };
+  } catch (err) {
+    console.error("On-chain stats failed:", err);
+  }
+  return undefined;
+}
 
 async function handleLookup(ctx: Context, query: string): Promise<void> {
   await ctx.replyWithChatAction("typing");
@@ -25,8 +40,11 @@ async function handleLookup(ctx: Context, query: string): Promise<void> {
       return;
     }
 
-    const details = await getCoinDetails(id);
-    await ctx.reply(buildCoinMessage(details), {
+    const [details, onchain] = await Promise.all([
+      getCoinDetails(id),
+      fetchOnchain(id),
+    ]);
+    await ctx.reply(buildCoinMessage(details, onchain), {
       parse_mode: "HTML",
       link_preview_options: { is_disabled: true },
     });
