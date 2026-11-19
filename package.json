@@ -14,7 +14,8 @@
   },
   "dependencies": {
     "dotenv": "^18.0.10",
-    "grammy": "^1.46.0"
+    "grammy": "^1.46.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",
