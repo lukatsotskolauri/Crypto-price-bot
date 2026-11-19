@@ -15,9 +15,7 @@ A Telegram bot that delivers real-time cryptocurrency prices and on-chain networ
 - Results for 15 popular tickers resolved instantly from a hardcoded map; unknown tokens fall back to CoinGecko search with scam-token filtering by market cap rank
 - Graceful shutdown on SIGINT/SIGTERM
 
-## Screenshot
 
-> _Add a screenshot here once the bot is running (`docs/screenshot.png`)_
 
 ## Setup
 
