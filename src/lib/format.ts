@@ -1,4 +1,5 @@
 import type { CoinDetails } from "../services/coingecko.js";
+import type { OnchainStats } from "../services/onchain.js";
 
 export function escapeHtml(text: string): string {
   return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -34,7 +35,22 @@ export function formatSupply(value: number | null): string {
   return value.toLocaleString("en-US");
 }
 
-export function buildCoinMessage(details: CoinDetails): string {
+function buildOnchainSection(stats: OnchainStats): string {
+  const lines = ["⛓ <b>Network</b>"];
+  if (stats.kind === "btc") {
+    const { blockHeight, fees } = stats.data;
+    lines.push(`Block: ${blockHeight.toLocaleString("en-US")}`);
+    lines.push(`Fees: fast ${fees.fast} · med ${fees.medium} · slow ${fees.slow} sat/vB`);
+  } else {
+    const { blockNumber, gasPriceGwei } = stats.data;
+    const gas = gasPriceGwei.toFixed(1).replace(/\.0$/, "");
+    lines.push(`Block: ${blockNumber.toLocaleString("en-US")}`);
+    lines.push(`Gas: ${gas} Gwei`);
+  }
+  return lines.join("\n");
+}
+
+export function buildCoinMessage(details: CoinDetails, onchain?: OnchainStats): string {
   const { name, symbol, market_cap_rank, links, market_data: md } = details;
 
   const rank = market_cap_rank != null ? ` · #${market_cap_rank}` : "";
@@ -71,6 +87,10 @@ export function buildCoinMessage(details: CoinDetails): string {
     "<b>Supply</b>",
     `Circulating: ${formatSupply(md.circulating_supply)}  Total: ${formatSupply(md.total_supply)}  Max: ${formatSupply(md.max_supply)}`,
   ];
+
+  if (onchain) {
+    lines.push("", buildOnchainSection(onchain));
+  }
 
   if (linkParts.length > 0) {
     lines.push("", linkParts.join(" · "));
