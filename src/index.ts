@@ -1,3 +1,7 @@
-import { config } from "./config.js";
+import "./config.js";
+import { startBot } from "./bot.js";
 
-console.log("config loaded");
+startBot().catch((err) => {
+  console.error("Fatal error:", err);
+  process.exit(1);
+});
